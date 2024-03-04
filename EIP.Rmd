@@ -9,7 +9,7 @@ editor_options:
 ## Model formulation:
 
 (SUPER DRAFT - Writing it down to FIX LOT OF ERRORS; just using it as a scratchpad cause
-I don't have a pen)
+I don't have a pen right now- notations are absolutely wrong)
 
 
 Writing down the formulation to model mosquitos. The equations are as
@@ -59,7 +59,7 @@ $$
 \frac{dS}{dt} = b - \beta S I_H - \mu_S S \\
 \frac{dE_0}{dt} = \beta S I_H - n \alpha_E E_0 - \mu_E E\\
 \frac{dE_n}{dt} = n \alpha_E E_{n-1} - n \alpha_E E_{n} - \mu_E \\
-\frac{dI_0}{dt}=  n \alpha_E E_{n} - n\alpha_II - \mu_I \\
+\frac{dI_0}{dt}=  n \alpha_E E_{n} - n\alpha_II_0 - \mu_I \\
 \frac{dI_n}{dt} = n\alpha_I I_{n-1} -  n\alpha_I I_{n} - \mu_I
 
 $$
@@ -67,3 +67,49 @@ $$
 
 ## The full model formulation with double feeding
 
+We need to create two different compartments,  I think: $D$ for exposed
+mosquitos that have doubled fed and $DI$ for the double infected.  I think 
+we need the double infected infectious group to be able to play around with the 
+senescenece development parameter...
+
+So this is what it would look like with the above modification. I don't have a good
+idea of the biting rate/function would look so I'm just going to assume that it's 
+some function of vertebrate host? Though, I'm still figuring out if we need the vertebrate
+host to simplify the model. 
+
+$$
+\frac{dE_0}{dt} = \beta S I_H - f(V_H)E_0 -  n \alpha_E E_0 - \mu_E E_0\\
+\frac{dE_n}{dt} = n \alpha_E E_{n-1} - n \alpha_E E_{n} - f(V_H)E_n - \mu_E \\
+$$
+
+The double fed states then look like below (I think? I feel like this is gonna be wonky)
+
+$$
+\frac{dD_0}{dt} = f(V_H)E_0 -  n \alpha_D D_0- \mu_D D_0\\
+\frac{dD_n}{dt} = f(V_H)D_n +  n \alpha_D D_{n-1} - n \alpha_D D_{n}  - \mu_E \\
+$$
+
+Then we have the double-fed individuals go into the $DI$ compartment:
+
+$$
+\frac{dDI_0}{dt}=  n \alpha_D D_{n} - n\alpha_{DI}DI_0 - \mu_{DI}DI_0 \\
+\frac{dDI_n}{dt} =n\alpha_{DI}DI_{n-1}-  n\alpha_{DI} DI_{n} - \mu_{DI}DI
+$$
+
+Look the ass model looks like this:
+
+$$
+
+\frac{dS}{dt} = b - \beta S I_H - \mu_S S \\
+\frac{dE_0}{dt} = \beta S I_H - f(V_H)E_0 -  n \alpha_E E_0 - \mu_E E_0\\
+\frac{dE_n}{dt} = n \alpha_E E_{n-1} - n \alpha_E E_{n} - f(V_H)E_n - \mu_E \\
+\frac{dI_0}{dt}=  n \alpha_E E_{n} - n\alpha_II_0 - \mu_I \\
+\frac{dI_n}{dt} = n\alpha_I I_{n-1} -  n\alpha_I I_{n} - \mu_I \\
+\frac{dD_0}{dt} = f(V_H)E_0 -  n \alpha_D D_0- \mu_D D_0\\
+\frac{dD_n}{dt} = f(V_H)D_n +  n \alpha_D D_{n-1} - n \alpha_D D_{n}  - \mu_E \\
+\frac{dDI_0}{dt}=  n \alpha_D D_{n} - n\alpha_{DI}DI_0 - \mu_{DI}DI_0 \\
+\frac{dDI_n}{dt} =n\alpha_{DI}DI_{n-1}-  n\alpha_{DI} DI_{n} - \mu_{DI}DI
+$$
+
+Oh god it looks bad, ok gotta check it but i think this is a general framework
+to launch ideas from.
