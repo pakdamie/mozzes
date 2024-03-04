@@ -1,0 +1,69 @@
+---
+title: "EIP"
+output: html_notebook
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+## Model formulation:
+
+(SUPER DRAFT - Writing it down to FIX LOT OF ERRORS; just using it as a scratchpad cause
+I don't have a pen)
+
+
+Writing down the formulation to model mosquitos. The equations are as
+follow. The first compartment is the susceptible mosquito:
+
+$$ \frac{dS}{dt} = b - \beta S  I_H - \mu_S S $$,
+
+where new susceptibles flow in. $b$ is the birth rate. $\beta$ is the
+infection rate and involves both the susceptible density and the
+infected host, $I_H$.
+
+The infected mosquitos that flow into the exposed class which is where
+individuals have parasites but are not infectious to vertebrate hosts:
+
+$$\frac{dE}{dt} = \beta S I_H - \int_{t-\tau}^{t} E(t-\tau)e^{-\mu_I \tau} d \tau - \mu_E,$$
+(Damie: Urgh super wrong, actually fix)
+
+this integrodifferential equation can be converted to a series of
+ordinary differential equation by using the linear chain trick. By
+assuming that the waiting time is a gamma-distribution than the above
+equation can be written as:
+
+$$ \frac{dE_0}{dt} = \beta S I_H - n \alpha_E E_0 - \mu_E$$
+
+$$
+\frac{dE_n}{dt} = n \alpha_E E_{n-1} - n \alpha_E E_{n}  - \mu_E. 
+$$
+
+Here $n$ is the number of subcompartments within the model and describes
+the variability in which individuals transition with the coefficient of
+variation being \$ \frac{1}{\sqrt(n)} \$. Those individuals that are
+able to survive than go into the infectious compartment. While the
+infectious mosquitos don't really have any "development toward a stage",
+I think it's easier to model the actual longevity using the linear chain
+trick than assuming the exponential.
+
+$$
+\frac{dI_0}{dt} = n \alpha_E E_{n} - n\alpha_II - \mu_I \\
+\frac{dI_n}{dt} = n\alpha_I I_{n-1} -  n\alpha_I I_{n} - \mu_I
+$$
+
+The full model without double feeding and assuming a Erlang distribution
+is then:
+
+$$
+
+\frac{dS}{dt} = b - \beta S I_H - \mu_S S \\
+\frac{dE_0}{dt} = \beta S I_H - n \alpha_E E_0 - \mu_E E\\
+\frac{dE_n}{dt} = n \alpha_E E_{n-1} - n \alpha_E E_{n} - \mu_E \\
+\frac{dI_0}{dt}=  n \alpha_E E_{n} - n\alpha_II - \mu_I \\
+\frac{dI_n}{dt} = n\alpha_I I_{n-1} -  n\alpha_I I_{n} - \mu_I
+
+$$
+
+
+## The full model formulation with double feeding
+
