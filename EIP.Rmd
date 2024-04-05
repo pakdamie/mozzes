@@ -1,115 +1,96 @@
 ---
 title: "EIP"
-output: html_notebook
-editor_options: 
-  markdown: 
+output:
+  pdf_document: default
+  html_notebook: default
+editor_options:
+  markdown:
     wrap: 72
 ---
 
 ## Model formulation:
 
-(SUPER DRAFT - Writing it down to FIX LOT OF ERRORS; just using it as a scratchpad cause
-I don't have a pen right now- notations are absolutely wrong)
+Writing down the formulation to model the mosquito population. The
+equation describing the susceptible mosquito is as follows :
+
+$$ \frac{dS(t)}{dt} = b - \beta S(t)  I_H(t) - \mu_S S(t), $$
+
+where is the $b$ is the birth rate and should be equal to the sum of the
+mortality terms and senescent development terms to ensure a constant
+population; $\beta$ is the infection rate where we assume a law of mass
+action between the susceptible vectors and the infected vertebrate host,
+$I_H$; and finally, the background mortality term, $\mu_S$.
+
+The infected mosquitoes then flow into the exposed class $E$ which we
+describe as the stage where the vectors are not yet infectious to
+vertebrate hosts:
+
+$$\frac{dE(t)}{dt} = \beta S(t) I_H(t) - \int_{t-\tau}^{t} E(t-\tau)e^{-\mu_I \tau} f(\tau) d\tau - \mu_E E(t),$$
+
+The integrodifferential equation describes the mosquitos that enter the
+exposed class $\tau$ days ago, survive (expressed by the exponential
+decay), and multiplied by the probability distribution function $f(t)$
+of the waiting time. Due to the difficulty of simulating this, we
+converted the integrodifferential equation into a series of ordinary
+differential equation by using the 'linear chain trick'. By assuming
+that the pdf is a gamma-distribution, the above equation can be written
+as:
+
+$$ \frac{dE_1(t)}{dt} = \beta S(t) I_H(t) - n \alpha_E E_1(t) - \mu_EE_1(t) \quad k = 1 $$
+
+$$\frac{dE_k}{dt} = n \alpha_E E_{k-1}(t) - n \alpha_E E_{k}(t)  - \mu_E E_k(t) \quad k >1$$
 
 
-Writing down the formulation to model mosquitos. The equations are as
-follow. The first compartment is the susceptible mosquito:
-
-$$ \frac{dS}{dt} = b - \beta S  I_H - \mu_S S $$,
-
-where new susceptibles flow in. $b$ is the birth rate. $\beta$ is the
-infection rate and involves both the susceptible density and the
-infected host, $I_H$.
-
-The infected mosquitos that flow into the exposed class which is where
-individuals have parasites but are not infectious to vertebrate hosts:
-
-$$\frac{dE}{dt} = \beta S I_H - \int_{t-\tau}^{t} E(t-\tau)e^{-\mu_I \tau} d \tau - \mu_E,$$
-(Damie: Urgh super wrong, actually fix)
-
-this integrodifferential equation can be converted to a series of
-ordinary differential equation by using the linear chain trick. By
-assuming that the waiting time is a gamma-distribution than the above
-equation can be written as:
-
-$$ \frac{dE_0}{dt} = \beta S I_H - n \alpha_E E_0 - \mu_E$$
-
-$$
-\frac{dE_n}{dt} = n \alpha_E E_{n-1} - n \alpha_E E_{n}  - \mu_E. 
-$$
-
-Here $n$ is the number of subcompartments within the model and describes
-the variability in which individuals transition with the coefficient of
-variation being \$ \frac{1}{\sqrt(n)} \$. Those individuals that are
-able to survive than go into the infectious compartment. While the
-infectious mosquitos don't really have any "development toward a stage",
-I think it's easier to model the actual longevity using the linear chain
-trick than assuming the exponential.
+Here, $n$ is the number of subcompartments within the model and
+describes the variability in which individuals transition. Specifically,
+the coefficient of variation (CV) is $\frac{1}{\sqrt(n)}$. Exposed
+individuals than transition into the infectious compartment:
 
 $$
-\frac{dI_0}{dt} = n \alpha_E E_{n} - n\alpha_II - \mu_I \\
-\frac{dI_n}{dt} = n\alpha_I I_{n-1} -  n\alpha_I I_{n} - \mu_I
+\frac{dI}{dt} = n \alpha_E E_{n}(t) - \alpha_II(t) 
 $$
-
-The full model without double feeding and assuming a Erlang distribution
-is then:
-
-$$
-
-\frac{dS}{dt} = b - \beta S I_H - \mu_S S \\
-\frac{dE_0}{dt} = \beta S I_H - n \alpha_E E_0 - \mu_E E\\
-\frac{dE_n}{dt} = n \alpha_E E_{n-1} - n \alpha_E E_{n} - \mu_E \\
-\frac{dI_0}{dt}=  n \alpha_E E_{n} - n\alpha_II_0 - \mu_I \\
-\frac{dI_n}{dt} = n\alpha_I I_{n-1} -  n\alpha_I I_{n} - \mu_I
-
-$$
-
 
 ## The full model formulation with double feeding
 
-We need to create two different compartments,  I think: $D$ for exposed
-mosquitos that have doubled fed and $DI$ for the double infected.  I think 
-we need the double infected infectious group to be able to play around with the 
-senescenece development parameter...
-
-So this is what it would look like with the above modification. I don't have a good
-idea of the biting rate/function would look so I'm just going to assume that it's 
-some function of vertebrate host? Though, I'm still figuring out if we need the vertebrate
-host to simplify the model. 
+We need to modify the full model formulation to create two different
+compartments. We declare $D(t)$ for exposed mosquitos that have doubled
+fed and $DI$(t) for the double infected. We must first modify the
+exposed class and a new outflow fo the exposed class is $f(V_H)E_0$
+which describe the rate at which the exposed class double feed:
 
 $$
-\frac{dE_0}{dt} = \beta S I_H - f(V_H)E_0 -  n \alpha_E E_0 - \mu_E E_0\\
-\frac{dE_n}{dt} = n \alpha_E E_{n-1} - n \alpha_E E_{n} - f(V_H)E_n - \mu_E \\
-$$
+\frac{dE_1(t)}{dt} = \beta S(t) I_H(t) - f(V_H)E_0(t) -  n \alpha_E E_0(t) - \mu_E E_0(t) \quad k = 1 \\ $$
 
-The double fed states then look like below (I think? I feel like this is gonna be wonky)
+$$\frac{dE_k(t)}{dt} = n \alpha_E E_{k-1}(t) - n \alpha_E E_{k}(t) - f(V_H)E_k(t) - \mu_E E_k(t) \quad k > 1\\$$
+
+
+
+The double-fed states that are still not infectious are then described
+below:
 
 $$
-\frac{dD_0}{dt} = f(V_H)E_0 -  n \alpha_D D_0- \mu_D D_0\\
-\frac{dD_n}{dt} = f(V_H)D_n +  n \alpha_D D_{n-1} - n \alpha_D D_{n}  - \mu_E \\
+\frac{dD_1}{dt} = f(V_H)E_1(t) -  n_D \alpha_D D_1(t)- \mu_D D_1(t) \quad k =1\\
+$$
+$$
+\frac{dD_k}{dt} = f(V_H)D_k(t) +  n_D \alpha_D D_{k-1}(t) - n_D \alpha_D D_{n}(t)  - \mu_E D_k(t) \quad k  >1 \\
 $$
 
 Then we have the double-fed individuals go into the $DI$ compartment:
 
 $$
-\frac{dDI_0}{dt}=  n \alpha_D D_{n} - n\alpha_{DI}DI_0 - \mu_{DI}DI_0 \\
-\frac{dDI_n}{dt} =n\alpha_{DI}DI_{n-1}-  n\alpha_{DI} DI_{n} - \mu_{DI}DI
+\frac{dDI(t)}{dt}=  n_D \alpha_D D_{n_D}(t) - \alpha_{DI}DI(t) 
 $$
 
-Look the ass model looks like this:
+Important assumptions in the model we must think about for the second
+model:
 
-$$
+1) Susceptible mosquitos do not double feed (should we change this). I
+can imagine it changes the model because with double feeding, maybe you
+can greatly increase the change of being infected by the vertebrate host
+AND increase your lifespan.
 
-\frac{dS}{dt} = b - \beta S I_H - \mu_S S \\
-\frac{dE_0}{dt} = \beta S I_H - f(V_H)E_0 -  n \alpha_E E_0 - \mu_E E_0\\
-\frac{dE_n}{dt} = n \alpha_E E_{n-1} - n \alpha_E E_{n} - f(V_H)E_n - \mu_E \\
-\frac{dI_0}{dt}=  n \alpha_E E_{n} - n\alpha_II_0 - \mu_I \\
-\frac{dI_n}{dt} = n\alpha_I I_{n-1} -  n\alpha_I I_{n} - \mu_I \\
-\frac{dD_0}{dt} = f(V_H)E_0 -  n \alpha_D D_0- \mu_D D_0\\
-\frac{dD_n}{dt} = f(V_H)D_n +  n \alpha_D D_{n-1} - n \alpha_D D_{n}  - \mu_E \\
-\frac{dDI_0}{dt}=  n \alpha_D D_{n} - n\alpha_{DI}DI_0 - \mu_{DI}DI_0 \\
-\frac{dDI_n}{dt} =n\alpha_{DI}DI_{n-1}-  n\alpha_{DI} DI_{n} - \mu_{DI}DI
-$$
+2) When you're an infected mosquito, we assume that the mortality is
+exponentially distributed.
 
-Oh god it looks bad, ok gotta check it but i think this is a general framework
-to launch ideas from.
+3) Assume a law of mass action when it comes to susceptible host and
+vertebrate hosts
