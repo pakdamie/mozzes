@@ -1,20 +1,22 @@
+library(deSolve)
+###DAMIE: for some stupid reason, you have to set n_E and n_D as global variables
+### trying to fix this
 
+n_E = 10
+n_D = 10
 
 ###PURE LINEAR CHAIN TRICK MODEL; if it's too slow I might write it in C 
 
 DEIP_ODE <- function(t, state, param) {
        
-        
         S<- state[1]
         E <- state[2:(n_E + 1)] 
         D <- state[(n_E + 2):(n_E+n_D+1)] 
         I <- state[(n_E+n_D +2)] 
         DI <- state[(n_E+n_D+3)] 
         
-        
-         with(
-                as.list(c(state, param)),
-                {
+         with(as.list(c(state, param)),
+              {
                         
         b = param['b'] #birth rate
         beta = param['beta'] # infection rate
@@ -76,22 +78,24 @@ if (n_D > 1) {
 }
 
 
+
+
  
 ###BAD PARAM VALUES 
 parameters_n <- c(
-        b = 0.02 , #birth rate
+        b = 10* 1/42 + 1/42 + 10*1/42 + 1/20 + 1/20  , #birth rate
         beta = 1e-3,# infection rate
         mu_S = 1/42 , #mosquito mortality rate  
-        bite = 1e-6, #as of right now let's do a constant
+        bite = 1e-2, #as of right now let's do a constant
         alpha_E = 1/11,  #the development rate of the single fed exposed class
         mu_E = 1/42, # the background mortality rate of the exposed class 
         alpha_I = 1/42, #the senescent rate 
         n_E = 10, #the shape parameter for the exposed class
         n_D = 10, #the shape parameter for the double fed class
-        alpha_DI = 1/20, #the development rate of the double infected (infected)
-        alpha_D = 1/11 * (2), #the development rate of the double infected
+        alpha_DI = (1/(42*2)), #the development rate of the double infected (infected)
+        alpha_D = 1/(11 / 2), #the development rate of the double infected
         mu_D = 1/20,
-        VH = 50) 
+        VH = 1000) 
 
 inits_n <- c(S = 850, 
              E = rep(0,parameters_n['n_E']),
@@ -99,7 +103,7 @@ inits_n <- c(S = 850,
              I  =0 ,
              DI =0)
 
-times <- seq(0, 30, by = 1)
+times <- seq(0, 100, by = 1)
 
 
 out_DDE <- data.frame(ode(y = inits_n, times = times, func = DEIP_ODE ,
@@ -114,10 +118,11 @@ double_fed_exposed <- rowSums(out_DDE[,(n_E+3):(n_E+ n_D+2)])
 infected <- out_DDE[,(n_E + n_D +3 )]
 double_infected <- out_DDE[,(n_E + n_D +4 )]
 
-par(mfrow=c(3,2))
-plot(susceptible, type = 'l', main = 'susceptible')
-plot(exposed, type = 'l', main = 'exposed')
-plot(double_fed_exposed, type = 'l', main = 'double_fed_Exposed')
-plot(infected, type = 'l', main = 'infected')
-plot(double_infected, type = 'l', main = 'double_infected')
+par(mfrow=c(2,2))
+plot(log(susceptible+1), type = 'l', main = 'susceptible')
+plot(log(exposed+1), type = 'l', main = 'exposed')
+lines(log(double_fed_exposed+1), type = 'l', main = 'double_fed_Exposed', col = 'red')
+plot(log(infected+1), type = 'l', main = 'infected')
+lines(log(double_infected+1), type = 'l', main = 'double_infected',col = 'red')
 
+###Gotta calculate the R0 through the next generation method merp merp 

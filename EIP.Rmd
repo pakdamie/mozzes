@@ -40,7 +40,6 @@ $$ \frac{dE_1(t)}{dt} = \beta S(t) I_H(t) - n \alpha_E E_1(t) - \mu_EE_1(t) \qua
 
 $$\frac{dE_k}{dt} = n \alpha_E E_{k-1}(t) - n \alpha_E E_{k}(t)  - \mu_E E_k(t) \quad k >1$$
 
-
 Here, $n$ is the number of subcompartments within the model and
 describes the variability in which individuals transition. Specifically,
 the coefficient of variation (CV) is $\frac{1}{\sqrt(n)}$. Exposed
@@ -63,15 +62,12 @@ $$
 
 $$\frac{dE_k(t)}{dt} = n \alpha_E E_{k-1}(t) - n \alpha_E E_{k}(t) - f(V_H)E_k(t) - \mu_E E_k(t) \quad k > 1\\$$
 
-
-
 The double-fed states that are still not infectious are then described
 below:
 
 $$
 \frac{dD_1}{dt} = f(V_H)E_1(t) -  n_D \alpha_D D_1(t)- \mu_D D_1(t) \quad k =1\\
-$$
-$$
+$$ $$
 \frac{dD_k}{dt} = f(V_H)D_k(t) +  n_D \alpha_D D_{k-1}(t) - n_D \alpha_D D_{n}(t)  - \mu_E D_k(t) \quad k  >1 \\
 $$
 
@@ -84,13 +80,30 @@ $$
 Important assumptions in the model we must think about for the second
 model:
 
-1) Susceptible mosquitos do not double feed (should we change this). I
-can imagine it changes the model because with double feeding, maybe you
-can greatly increase the change of being infected by the vertebrate host
-AND increase your lifespan.
+1)  Susceptible mosquitos do not double feed (should we change this). I
+    can imagine it changes the model because with double feeding, maybe
+    you can greatly increase the change of being infected by the
+    vertebrate host AND increase your lifespan.
 
-2) When you're an infected mosquito, we assume that the mortality is
-exponentially distributed.
+2)  When you're an infected mosquito, we assume that the mortality is
+    exponentially distributed.
 
-3) Assume a law of mass action when it comes to susceptible host and
-vertebrate hosts
+3)  Assume a law of mass action when it comes to susceptible host and
+    vertebrate hosts
+
+Things we have to talk about:
+
+1.  Vertebrate host - we want to keep the vertebrate host (\$V_H\$) in
+    the model at equilibrium?
+
+2.  Biting rate and the infection rate have to be linked (i just
+    haphazardly put different numbers in here, but the infection rate
+    must include the daily biting rate)
+
+## Calculating R0 using the next generation matrix
+
+Haven't calculated R0 as complicated as this- is there a way to
+partition which group is contributing more to the R0 (partioning it in a
+way?). First pass because of the multiple compartments mean that we
+might have to the next generation matrix method. First question, what is
+the difference in R0 with and without double feeding.
